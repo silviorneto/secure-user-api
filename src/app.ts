@@ -6,6 +6,7 @@ import { globalLimiter } from './middleware/rateLimiter.middleware.js'
 import { errorHandler } from './middleware/errorHandler.middleware.js'
 import { authRouter } from './routes/auth.routes.js'
 import { userRouter } from './routes/user.routes.js'
+import { adminRouter } from './routes/admin.routes.js'
 
 /**
  * App is exported separately from the server so supertest can import it
@@ -39,6 +40,7 @@ function createApp() {
 
   app.use('/api/auth', authRouter)
   app.use('/api/users', userRouter)
+  app.use('/api/admin', adminRouter)
 
   app.use(errorHandler)
 
