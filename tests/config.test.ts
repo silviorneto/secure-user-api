@@ -1,23 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 describe('config', () => {
   beforeEach(() => vi.resetModules())
+  afterEach(() => vi.unstubAllEnvs())
 
   it('throws if JWT_SECRET is missing', async () => {
-    const original = process.env.JWT_SECRET
-    delete process.env.JWT_SECRET
+    vi.stubEnv('JWT_SECRET', '')
     await expect(import('../src/config/index.js')).rejects.toThrow(
       'Missing required environment variable: JWT_SECRET'
     )
-    process.env.JWT_SECRET = original
   })
 
   it('throws if DATABASE_URL is missing', async () => {
-    const original = process.env.DATABASE_URL
-    delete process.env.DATABASE_URL
+    vi.stubEnv('DATABASE_URL', '')
     await expect(import('../src/config/index.js')).rejects.toThrow(
       'Missing required environment variable: DATABASE_URL'
     )
-    process.env.DATABASE_URL = original
   })
 })
