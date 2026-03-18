@@ -1,14 +1,12 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../lib/prisma.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 
-const prisma = new PrismaClient()
-
 /**
- * [STRIDE: I] [OWASP: A01:2025 Broken Access Control]
- * passwordHash is omitted at the ORM level — the hash never travels over the wire.
+ * [STRIDE: I] [OWASP: A01:2025 Broken Access Control] [Endereça: T07]
+ * O passwordHash é omitido ao nível do ORM — o hash nunca viaja na rede.
  */
-const USER_SAFE_SELECT = {
+export const USER_SAFE_SELECT = {
   id: true,
   name: true,
   email: true,
@@ -17,9 +15,9 @@ const USER_SAFE_SELECT = {
 }
 
 /**
- * [STRIDE: E] [OWASP: A01:2025 Broken Access Control]
- * IDOR prevention: userId is sourced exclusively from the verified JWT (req.user),
- * never from req.params or req.body. A user can only access their own profile.
+ * [STRIDE: E] [OWASP: A01:2025 Broken Access Control] [Endereça: T12]
+ * Prevenção de IDOR: o userId é obtido exclusivamente do JWT verificado (req.user),
+ * nunca de req.params ou req.body. Um utilizador só consegue aceder ao seu próprio perfil.
  */
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   const userId = req.user!.userId
@@ -36,8 +34,8 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
 
 export const updateProfile = asyncHandler(async (req: Request, res: Response) => {
   /**
-   * [STRIDE: E] [OWASP: A01:2025 Broken Access Control]
-   * IDOR prevention on PUT: same ownership guarantee — userId from JWT only.
+   * [STRIDE: E] [OWASP: A01:2025 Broken Access Control] [Endereça: T12]
+   * Prevenção de IDOR no PUT: mesma garantia de ownership — userId exclusivamente do JWT.
    */
   const userId = req.user!.userId
   const data = req.body as { name?: string; email?: string }

@@ -1,11 +1,11 @@
 /**
- * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration]
- * Zod schemas validate all incoming data at the boundary.
- * Prevents injection via malformed or oversized inputs before they reach business logic.
+ * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration] [Endereça: T05, T06]
+ * Os schemas Zod validam todos os dados de entrada na fronteira da aplicação.
+ * Previnem injecção via inputs malformados ou excessivos antes de chegarem à lógica de negócio.
  */
 import { z } from 'zod'
 
-const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
+export const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
 
 export const RegisterSchema = z.object({
   name: z.string().regex(nameRegex, 'Name contains invalid characters'),
@@ -13,7 +13,7 @@ export const RegisterSchema = z.object({
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
-    .max(72, 'Password must be at most 72 characters'), // bcrypt limit
+    .max(72, 'Password must be at most 72 characters'), // limite do bcrypt
 })
 
 export const LoginSchema = z.object({

@@ -1,7 +1,7 @@
 /**
- * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures]
- * JWT with 15-minute expiry limits the window of token abuse if intercepted.
- * Secret is loaded from .env — never hardcoded in source.
+ * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures] [Endereça: T03, T15]
+ * JWT com expiração de 15 minutos limita a janela de abuso do token em caso de intercepção.
+ * O segredo é carregado do ficheiro .env, nunca escrito directamente no código fonte.
  */
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
@@ -16,9 +16,12 @@ export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, config.jwtSecret, { expiresIn: config.jwtExpiresIn as string })
 }
 
+// Definido ao nível do módulo para que o objecto de schema não seja reconstruído a cada chamada.
+const TokenPayloadSchema = z.object({ userId: z.string(), role: z.string() })
+
 export function verifyToken(token: string): TokenPayload {
-  // Runtime shape validation via Zod — prevents a valid but malformed JWT
-  // from silently producing undefined on payload.userId or payload.role.
+  // Validação de forma em runtime via Zod — impede que um JWT válido mas malformado
+  // produza silenciosamente undefined em payload.userId ou payload.role.
   const decoded = jwt.verify(token, config.jwtSecret)
-  return z.object({ userId: z.string(), role: z.string() }).parse(decoded)
+  return TokenPayloadSchema.parse(decoded)
 }

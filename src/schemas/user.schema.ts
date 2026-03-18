@@ -1,11 +1,10 @@
 /**
- * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration]
- * Zod schema for profile updates. The `role` field is intentionally absent —
- * an attacker cannot escalate privileges by injecting role into the request body.
+ * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration] [Endereça: T06]
+ * Schema Zod para actualização de perfil. O campo `role` está intencionalmente ausente,
+ * um atacante não pode escalar privilégios injectando role no body do pedido.
  */
 import { z } from 'zod'
-
-const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
+import { nameRegex } from './auth.schema.js'
 
 export const UpdateProfileSchema = z
   .object({

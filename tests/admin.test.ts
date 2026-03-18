@@ -1,15 +1,10 @@
-import { describe, it, expect, afterAll } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import { app } from '../src/app.js'
-import { PrismaClient, Role } from '@prisma/client'
+import { Role } from '@prisma/client'
 import { hashPassword } from '../src/utils/bcrypt.js'
-
-const prisma = new PrismaClient({
-  datasources: { db: { url: process.env.DATABASE_URL } },
-})
-
-// Disconnect this test-local client so Vitest does not hang
-afterAll(() => prisma.$disconnect())
+import { prisma } from './setup.js'
+import { registerAndLogin } from './testHelpers.js'
 
 async function createAdminAndLogin() {
   const passwordHash = await hashPassword('Admin123!')
@@ -19,16 +14,6 @@ async function createAdminAndLogin() {
   const res = await request(app)
     .post('/api/auth/login')
     .send({ email: 'admin@test.com', password: 'Admin123!' })
-  return res.body.token as string
-}
-
-async function createUserAndLogin() {
-  await request(app)
-    .post('/api/auth/register')
-    .send({ name: 'Normal User', email: 'user@test.com', password: 'User1234!' })
-  const res = await request(app)
-    .post('/api/auth/login')
-    .send({ email: 'user@test.com', password: 'User1234!' })
   return res.body.token as string
 }
 
@@ -46,7 +31,7 @@ describe('GET /api/admin/users', () => {
   })
 
   it('returns 403 for non-admin user', async () => {
-    const token = await createUserAndLogin()
+    const token = await registerAndLogin('user@test.com', 'User1234!', 'Normal User')
     const res = await request(app)
       .get('/api/admin/users')
       .set('Authorization', `Bearer ${token}`)

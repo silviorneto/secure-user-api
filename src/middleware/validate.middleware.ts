@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express'
 import { ZodSchema, ZodError } from 'zod'
 
 /**
- * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration]
- * Factory that returns an Express middleware validating req.body against a Zod schema.
- * Returns 400 with field-level error details on failure, never passes invalid data downstream.
+ * [STRIDE: T] [OWASP: A05:2025 Security Misconfiguration] [Endereça: T05, T06]
+ * Factory que devolve um middleware Express para validar req.body contra um schema Zod.
+ * Devolve 400 com erros ao nível do campo em caso de falha; nunca passa dados inválidos para o controller.
  */
 export function validate(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {

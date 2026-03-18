@@ -1,30 +1,34 @@
 import { Request, Response } from 'express'
-import { PrismaClient } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+import { prisma } from '../lib/prisma.js'
 import { hashPassword, comparePassword } from '../utils/bcrypt.js'
 import { signToken } from '../utils/jwt.js'
 import { logLoginAttempt } from '../utils/logger.js'
 import { asyncHandler } from '../utils/asyncHandler.js'
 
-const prisma = new PrismaClient()
-
 /**
- * [STRIDE: I] [OWASP: A07:2025 Identification and Authentication Failures]
- * Returns HTTP 201 with an identical body whether registration succeeds or the email
- * already exists. This prevents user enumeration via differing responses.
+ * [STRIDE: I] [OWASP: A07:2025 Identification and Authentication Failures] [Endereça: T02]
+ * Devolve HTTP 201 com um corpo idêntico quer o registo seja bem-sucedido quer o email
+ * já exista. Impede a enumeração de contas via respostas diferenciadas.
  */
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body as { name: string; email: string; password: string }
 
   /**
-   * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures]
-   * bcrypt cost factor 12 is applied before storing. Plain password is never persisted.
+   * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures] [Endereça: T01]
+   * bcrypt com cost factor 12 é aplicado antes de armazenar. A password nunca é persistida em claro.
    */
   const passwordHash = await hashPassword(password)
 
   try {
     await prisma.user.create({ data: { name, email, passwordHash } })
-  } catch {
-    // Silently ignore duplicate email — same response as success (enumeration prevention)
+  } catch (err) {
+    // Apenas ignora violações de restrição única (email duplicado).
+    // Todos os outros erros (falhas de ligação, etc.) são relançados para que
+    // o handler centralizado devolva 500 em vez de um 201 enganoso.
+    if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002')) {
+      throw err
+    }
   }
 
   res.status(201).json({ message: 'If this email is not registered, your account has been created.' })
@@ -51,8 +55,8 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   }
 
   /**
-   * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures]
-   * JWT signed with server secret, expires in 15 minutes.
+   * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures] [Endereça: T03, T15]
+   * JWT assinado com o segredo do servidor, expira em 15 minutos.
    */
   const token = signToken({ userId: user.id, role: user.role })
   res.status(200).json({ token })

@@ -1,0 +1,27 @@
+info:
+  name: Register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/auth/register"
+  auth: none
+  body:
+    type: json
+    data: |
+      {
+        "name": "Test User",
+        "email": "newuser@test.com",
+        "password": "User1234!"
+      }
+
+headers:
+  - name: Content-Type
+    value: application/json
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

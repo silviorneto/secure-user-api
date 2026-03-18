@@ -1,0 +1,32 @@
+info:
+  name: Login Admin
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/auth/login"
+  body:
+    type: json
+    data: |
+      {
+        "email": "admin@test.com",
+        "password": "Admin123!"
+      }
+
+runtime:
+  variables:
+    - name: baseUrl
+      value: http://localhost:3000
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200 && res.body.token) {
+            bru.setVar("adminToken", res.body.token);
+          }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

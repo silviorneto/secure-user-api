@@ -1,7 +1,7 @@
 /**
- * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures]
- * bcrypt with cost factor 12 prevents brute-force attacks on stolen password hashes.
- * Adaptive hashing: cost factor 12 takes ~250ms, making offline attacks impractical.
+ * [STRIDE: S] [OWASP: A07:2025 Identification and Authentication Failures] [Endereça: T01]
+ * bcrypt com cost factor 12 torna ataques de força bruta sobre hashes roubados extremamente lentos.
+ * Hashing adaptativo: cost factor 12 demora aproximadamente 250ms por tentativa, inviabilizando ataques offline.
  */
 import bcrypt from 'bcrypt'
 

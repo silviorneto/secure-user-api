@@ -9,32 +9,36 @@ import { userRouter } from './routes/user.routes.js'
 import { adminRouter } from './routes/admin.routes.js'
 
 /**
- * App is exported separately from the server so supertest can import it
- * without starting the HTTP server (no port binding in tests).
+ * A app é exportada separadamente do servidor para que o supertest a possa importar
+ * sem iniciar o servidor HTTP (sem binding de porta nos testes).
  */
 function createApp() {
   const app = express()
 
   /**
-   * [STRIDE: I] [OWASP: A02:2025 Cryptographic Failures]
-   * Helmet sets HTTP security headers: CSP, HSTS, X-Frame-Options, etc.
+   * [STRIDE: I] [OWASP: A02:2025 Cryptographic Failures] [Endereça: T09]
+   * O Helmet define cabeçalhos HTTP de segurança: CSP, HSTS, X-Frame-Options, etc.
+   * Remove o cabeçalho X-Powered-By que revelaria a tecnologia usada no servidor.
    */
   app.use(helmet())
 
   /**
-   * [OWASP: A02:2025 Cryptographic Failures]
-   * CORS restricted to a specific origin — no wildcard.
+   * [STRIDE: I] [OWASP: A02:2025 Cryptographic Failures] [Endereça: T14]
+   * CORS restrito a uma origin específica — sem wildcard.
+   * Pedidos de origens não autorizadas são bloqueados pelo browser.
    */
   app.use(cors({ origin: config.allowedOrigin, credentials: true }))
 
   /**
-   * [STRIDE: D] — Body size limit prevents large payload DoS attacks.
+   * [STRIDE: D] [OWASP: A04:2025 Insecure Design] [Endereça: T10]
+   * Limite de tamanho do body previne ataques DoS por payloads excessivamente grandes.
    */
   app.use(express.json({ limit: '10kb' }))
 
   /**
-   * [STRIDE: D] — Global rate limiter applied before any routing logic.
-   * Rate limiting before auth prevents brute-force CPU waste on JWT verification.
+   * [STRIDE: D] [OWASP: A04:2025 Insecure Design] [Endereça: T11]
+   * Rate limiter global aplicado antes de qualquer lógica de routing.
+   * Actua antes da autenticação para evitar desperdício de CPU em verificações JWT durante brute-force.
    */
   app.use(globalLimiter)
 

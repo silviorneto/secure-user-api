@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express'
 import { Role } from '@prisma/client'
 
 /**
- * [STRIDE: E] [OWASP: A01:2025 Broken Access Control]
- * Role-based access control. Verifies req.user.role matches the required role.
- * Must be used after authMiddleware — depends on req.user being set.
+ * [STRIDE: E] [OWASP: A01:2025 Broken Access Control] [Endereça: T13]
+ * Controlo de acesso baseado em papéis (RBAC). Verifica se req.user.role corresponde ao papel exigido.
+ * Deve ser usado após o authMiddleware, depende de req.user estar definido.
  */
 export function requireRole(role: Role) {
   return (req: Request, res: Response, next: NextFunction) => {

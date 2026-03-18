@@ -1,12 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import { app } from '../src/app.js'
-
-async function registerAndLogin(email: string, password: string, name = 'Test User') {
-  await request(app).post('/api/auth/register').send({ name, email, password })
-  const res = await request(app).post('/api/auth/login').send({ email, password })
-  return res.body.token as string
-}
+import { registerAndLogin } from './testHelpers.js'
 
 describe('GET /api/users/profile', () => {
   it('returns profile without passwordHash', async () => {

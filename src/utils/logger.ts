@@ -1,7 +1,7 @@
 /**
- * [STRIDE: R] [OWASP: A09:2025 Security Logging and Monitoring Failures]
- * Structured logging with Winston. Logs login attempts with IP and timestamp.
- * Passwords are never logged — only email and IP are captured.
+ * [STRIDE: R] [OWASP: A09:2025 Security Logging and Monitoring Failures] [Endereça: T04]
+ * Logging estruturado com Winston. Regista tentativas de login com IP e timestamp.
+ * As passwords nunca são registadas, apenas o email e o IP são capturados.
  */
 import winston from 'winston'
 
@@ -18,6 +18,6 @@ export const logger = winston.createLogger({
 })
 
 export function logLoginAttempt(email: string, ip: string, success: boolean) {
-  // Never log the password — only the email (for audit) and IP
-  logger.info('login_attempt', { email, ip, success, timestamp: new Date().toISOString() })
+  // A password nunca é parâmetro desta função — impossível de registar acidentalmente
+  logger.info('login_attempt', { email, ip, success })
 }
